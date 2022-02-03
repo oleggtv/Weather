@@ -11,7 +11,7 @@ namespace Weather
     {
         async Task<Weather> IWeatherRepository.GetWeatherByCityNameAsync(string cityName)
         {
-            Console.WriteLine("get");
+            Console.WriteLine("get json");
             FileInfo file = new FileInfo(@"C:\myDir\weather.txt");
             if (!file.Exists)
             {
