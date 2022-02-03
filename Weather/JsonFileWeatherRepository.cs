@@ -23,7 +23,6 @@ namespace Weather
                 string line;
                 while ((line = sr.ReadLine()) != null)
                 {
-                    //Console.WriteLine(line);
                     Weather weather = JsonSerializer.Deserialize<Weather>(line);
                     if (weather.cityName == cityName)
                     {
@@ -47,7 +46,6 @@ namespace Weather
             {
                 sw.WriteLine(json);
             }
-            //Console.WriteLine(json);
         }
 
         async Task IWeatherRepository.RemoveWeatherAsync(Weather weather)
