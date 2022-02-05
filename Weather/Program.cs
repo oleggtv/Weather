@@ -27,10 +27,10 @@ namespace Weather
             }
             
             var api = RestService.For<IWeatherApi>(url);
-            var jsonFilerepository = new JsonFileWeatherRepository();
-            //var xmlWeatherRepository = new XmlFileWeatherRepository();
-            WeatherService weatherService = new WeatherService(jsonFilerepository, api);
-            //WeatherService weatherService = new WeatherService(xmlWeatherRepository, api);
+            //var jsonFilerepository = new JsonFileWeatherRepository();
+            //WeatherService weatherService = new WeatherService(jsonFilerepository, api);
+            var xmlWeatherRepository = new XmlFileWeatherRepository();
+            WeatherService weatherService = new WeatherService(xmlWeatherRepository, api);
             Weather weather = await GetWeatherAsync(weatherService, city, unit, appid, api);
 
             if (weather != null)
