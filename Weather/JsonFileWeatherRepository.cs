@@ -35,9 +35,8 @@ namespace Weather
 
         async Task IWeatherRepository.RemoveWeatherAsync(Weather weather)
         {
-            var weathers = new List<Weather>();
             var weatherJson = File.ReadAllText(fileinfo.FullName);
-            weathers = JsonSerializer.Deserialize<List<Weather>>(weatherJson);
+            var weathers = JsonSerializer.Deserialize<List<Weather>>(weatherJson);
             foreach (Weather w in weathers)
             {
                 if (w.cityName.Equals(weather.cityName))
