@@ -10,10 +10,8 @@ namespace Weather
     public class XmlFileWeatherRepository : IWeatherRepository
     {
         FileInfo fileInfo = new FileInfo(@"C:\myDir\weather.xml");
-        Weather IWeatherRepository.GetWeatherByCityName(string cityName)
+        async Task<Weather> IWeatherRepository.GetWeatherByCityName(string cityName)
         {
-            Console.WriteLine("get xml");
-            
             if (!fileInfo.Exists || fileInfo.Length == 0)
             {
                 return null;

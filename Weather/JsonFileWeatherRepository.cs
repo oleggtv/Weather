@@ -10,7 +10,7 @@ namespace Weather
     public class JsonFileWeatherRepository: IWeatherRepository
     {
         FileInfo fileinfo = new FileInfo(@"C:\myDir\weather.json");
-        Weather IWeatherRepository.GetWeatherByCityName(string cityName)
+        async Task<Weather> IWeatherRepository.GetWeatherByCityName(string cityName)
         {
             if (!fileinfo.Exists || fileinfo.Length == 0)
             {
