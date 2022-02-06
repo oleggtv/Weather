@@ -9,83 +9,61 @@ namespace Weather
 {
     public class XmlFileWeatherRepository : IWeatherRepository
     {
-        async Task<Weather> IWeatherRepository.GetWeatherByCityNameAsync(string cityName)
+        FileInfo fileInfo = new FileInfo(@"C:\myDir\weather.xml");
+        Weather IWeatherRepository.GetWeatherByCityName(string cityName)
         {
             Console.WriteLine("get xml");
-            FileInfo fileInfo = new FileInfo(@"C:\myDir\weather.xml");
-            if (!fileInfo.Exists)
+            
+            if (!fileInfo.Exists || fileInfo.Length == 0)
             {
-                Console.WriteLine("no file");
                 return null;
             }
             XmlSerializer xml = new XmlSerializer(typeof(List<Weather>));
-            using (FileStream fs = new FileStream(@"C:\myDir\weather.xml", FileMode.OpenOrCreate))
+            var weathers = new List<Weather>();
+            using (FileStream fs = new FileStream(fileInfo.FullName, FileMode.OpenOrCreate))
             {
-                List<Weather> weatherList = xml.Deserialize(fs) as List<Weather>;
-                foreach (Weather weather in weatherList)
-                {
-                    if (weather.cityName == cityName)
-                    {
-                        Console.WriteLine(cityName);
-                        return weather;
-                    }
-                }
+                weathers = xml.Deserialize(fs) as List<Weather>;
             }
-            return null;
+            return weathers?.FirstOrDefault(w => w.cityName.Equals(cityName));
         }
 
         async Task IWeatherRepository.AddWeatherAsync(Weather weather)
         {
-            Console.WriteLine("add xml");
-            List<Weather> weatherList = new List<Weather>();
+            List<Weather> weathers = new List<Weather>();
             XmlSerializer xml = new XmlSerializer(typeof(List<Weather>));
-            FileInfo fileInfo = new FileInfo(@"C:\myDir\weather.xml");
-            if (!fileInfo.Exists)
+            if (fileInfo.Exists)
             {
-                Console.WriteLine("add no file");
-            }
-            else
-            {
-                Console.WriteLine("add yes file");
-                using (FileStream fs = new FileStream(@"C:\myDir\weather.xml", FileMode.Open))
+                using (FileStream fs = new FileStream(fileInfo.FullName, FileMode.Open))
                 {
-                    weatherList = (List<Weather>)xml.Deserialize(fs);
+                    weathers = (List<Weather>)xml.Deserialize(fs);
                 }
             }
-            Console.WriteLine("add to xml");
-            weatherList.Add(weather);
-            Console.WriteLine(weatherList);
-            using (FileStream fs = new FileStream(@"C:\myDir\weather.xml", FileMode.Create))
+            weathers.Add(weather);
+            using (FileStream fs = new FileStream(fileInfo.FullName, FileMode.Create))
             {
-                xml.Serialize(fs, weatherList);
+                xml.Serialize(fs, weathers);
             }
         }
 
         async Task IWeatherRepository.RemoveWeatherAsync(Weather weather)
         {
-            Console.WriteLine("remove xml");
-            List<Weather> weatherList = new List<Weather>();
+            List<Weather> weathers = new List<Weather>();
             XmlSerializer xml = new XmlSerializer(typeof(List<Weather>));
-            using (FileStream fs = new FileStream(@"C:\myDir\weather.xml", FileMode.Open))
+            using (FileStream fs = new FileStream(fileInfo.FullName, FileMode.Open))
             {
-                weatherList = (List<Weather>)xml.Deserialize(fs);
+                weathers = (List<Weather>)xml.Deserialize(fs);
             }
-            Weather wRemove = new Weather();
-            foreach (Weather w in weatherList)
+            foreach (Weather w in weathers)
             {
-                if (w.cityName == weather.cityName)
+                if (w.cityName.Equals(weather.cityName))
                 {
-                    wRemove = w;
+                    weathers.Remove(w);
                     break;
                 }
             }
-            weatherList.Remove(wRemove);
-            weatherList.Add(weather);
-            Console.WriteLine(weather.cityName);
-            Console.WriteLine(weather.dateTime);
-            using (FileStream fs = new FileStream(@"C:\myDir\weather.xml", FileMode.Create))
+            using (FileStream fs = new FileStream(fileInfo.FullName, FileMode.Create))
             {
-                xml.Serialize(fs, weatherList);
+                xml.Serialize(fs, weathers);
             }
         }
     }

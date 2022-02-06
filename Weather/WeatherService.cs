@@ -15,9 +15,9 @@ namespace Weather
             _weatherRepository = weatherRepository;
             _weatherApi = weatherApi;
         }
-        public Task<Weather> GetWeatherByCityNameAsync(string cityName)
+        public Weather GetWeatherByCityNameAsync(string cityName)
         {
-            return _weatherRepository.GetWeatherByCityNameAsync(cityName);
+            return _weatherRepository.GetWeatherByCityName(cityName);
         }
         public async Task AddAsync(Weather weather)
         {

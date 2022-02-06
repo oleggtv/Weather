@@ -8,7 +8,7 @@ namespace Weather
 {
     public interface IWeatherRepository
     {
-        Task<Weather> GetWeatherByCityNameAsync(string cityName);
+        Weather GetWeatherByCityName(string cityName);
         Task AddWeatherAsync(Weather weather);
         Task RemoveWeatherAsync(Weather weather);
     }

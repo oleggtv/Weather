@@ -9,72 +9,44 @@ namespace Weather
 {
     public class JsonFileWeatherRepository: IWeatherRepository
     {
-        async Task<Weather> IWeatherRepository.GetWeatherByCityNameAsync(string cityName)
+        FileInfo fileinfo = new FileInfo(@"C:\myDir\weather.json");
+        Weather IWeatherRepository.GetWeatherByCityName(string cityName)
         {
-            Console.WriteLine("get json");
-            FileInfo file = new FileInfo(@"C:\myDir\weather.txt");
-            if (!file.Exists)
+            if (!fileinfo.Exists || fileinfo.Length == 0)
             {
-                Console.WriteLine("no file");
                 return null;
             }
-            using (StreamReader sr = new StreamReader(@"C:\myDir\weather.txt", System.Text.Encoding.Default))
-            {
-                string line;
-                while ((line = sr.ReadLine()) != null)
-                {
-                    Weather weather = JsonSerializer.Deserialize<Weather>(line);
-                    if (weather.cityName == cityName)
-                    {
-                        return weather;
-                    }
-                }
-            }
-            return null;
+            var weatherJson = File.ReadAllText(fileinfo.FullName);
+            var weathers = JsonSerializer.Deserialize<List<Weather>>(weatherJson);
+            return weathers?.FirstOrDefault(w => w.cityName.Equals(cityName));
         }
 
         async Task IWeatherRepository.AddWeatherAsync(Weather weather)
         {
-            Console.WriteLine("add");
-            string json = JsonSerializer.Serialize(weather);
-            FileInfo file = new FileInfo(@"C:\myDir\weather.txt");
-            if (!file.Exists)
+            var weathers = new List<Weather>();
+            if (fileinfo.Exists)
             {
-                file.Create();
+                var weatherJson = File.ReadAllText(fileinfo.FullName);
+                weathers = JsonSerializer.Deserialize<List<Weather>>(weatherJson);
             }
-            using (StreamWriter sw = new StreamWriter(@"C:\myDir\weather.txt", true, System.Text.Encoding.Default))
-            {
-                sw.WriteLine(json);
-            }
+            weathers.Add(weather);
+            File.WriteAllText(fileinfo.FullName, JsonSerializer.Serialize(weathers));
         }
 
         async Task IWeatherRepository.RemoveWeatherAsync(Weather weather)
         {
-            Console.WriteLine("remove");
-            string json = JsonSerializer.Serialize(weather);
-            List<string> list = new List<string>();
-            using (StreamReader sr = new StreamReader(@"C:\myDir\weather.txt", System.Text.Encoding.Default))
+            var weathers = new List<Weather>();
+            var weatherJson = File.ReadAllText(fileinfo.FullName);
+            weathers = JsonSerializer.Deserialize<List<Weather>>(weatherJson);
+            foreach (Weather w in weathers)
             {
-                string line;
-                while ((line = sr.ReadLine()) != null)
+                if (w.cityName.Equals(weather.cityName))
                 {
-                    if (JsonSerializer.Deserialize<Weather>(line).cityName == JsonSerializer.Deserialize<Weather>(json).cityName)
-                    {
-                        list.Add(json);
-                    }
-                    else
-                    {
-                        list.Add(line);
-                    }
+                    weathers.Remove(w);
+                    break;
                 }
             }
-            using (StreamWriter sw = new StreamWriter(@"C:\myDir\weather.txt", false, System.Text.Encoding.Default))
-            {
-                foreach (string line in list)
-                {
-                    sw.WriteLine(line);
-                }
-            }
+            File.WriteAllText(fileinfo.FullName, JsonSerializer.Serialize(weathers));
         }
     }
 }
