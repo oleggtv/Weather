@@ -11,5 +11,6 @@ namespace Weather
         Task<Weather> GetWeatherByCityName(string cityName);
         Task AddWeatherAsync(Weather weather);
         Task RemoveWeatherAsync(Weather weather);
+        Task ReplaceWeatherAsync(Weather weather);
     }
 }

@@ -17,9 +17,29 @@ namespace Weather
         }
         public async Task<Weather> GetWeatherByCityNameAsync(string cityName)
         {
-            Weather weather = await _weatherRepository.GetWeatherByCityName(cityName);
-            Weather w = await GetWeather(weather);
-            return w;
+            Weather weatherGet = await _weatherRepository.GetWeatherByCityName(cityName);
+            if (weatherGet != null && (DateTime.Now - weatherGet.dateTime).Minutes < 1)
+            {
+                return weatherGet;
+            }
+            var queryParams = new Dictionary<string, string>()
+            {
+                {"q", cityName},
+                {"units", "metric"},
+                {"appid", "de120f7ac96fa836de3f0c35eed33709"}
+            };
+            Weather weather = new Weather(cityName, await _weatherApi.GetWeatherAsync(queryParams), DateTime.Now);
+            if (weather == null)
+            {
+                return null;
+            }
+            if (weatherGet == null)
+            {
+                await AddAsync(weather);
+                return weather;
+            }
+            await ReplaceAsync(weather);
+            return weather;
         }
         public async Task AddAsync(Weather weather)
         {
@@ -30,29 +50,33 @@ namespace Weather
         {
             _weatherRepository.RemoveWeatherAsync(weather);
         }
-
-        public async Task<Weather> GetWeather(Weather weather)
+        public async Task ReplaceAsync(Weather weather)
         {
-            if (weather != null && (DateTime.Now - weather.dateTime).Minutes < 1)
-            {
-                return weather;
-            }
-            if (weather != null)
-            {
-                await RemoveAsync(weather);
-            }
-            var queryParams = new Dictionary<string, string>()
-            {
-                {"q", weather.cityName},
-                {"units", "metric"},
-                {"appid", "de120f7ac96fa836de3f0c35eed33709"}
-            };
-            weather = new Weather(weather.cityName, await _weatherApi.GetWeatherAsync(queryParams), DateTime.Now);
-            if (weather != null)
-            {
-                await AddAsync(weather);
-            }
-            return weather;
+            _weatherRepository.ReplaceWeatherAsync(weather);
         }
+
+        //public async Task<Weather> GetWeather(Weather weather)
+        //{
+        //    if (weather != null && (DateTime.Now - weather.dateTime).Minutes < 1)
+        //    {
+        //        return weather;
+        //    }
+        //    if (weather != null)
+        //    {
+        //        await RemoveAsync(weather);
+        //    }
+        //    var queryParams = new Dictionary<string, string>()
+        //    {
+        //        {"q", weather.cityName},
+        //        {"units", "metric"},
+        //        {"appid", "de120f7ac96fa836de3f0c35eed33709"}
+        //    };
+        //    weather = new Weather(weather.cityName, await _weatherApi.GetWeatherAsync(queryParams), DateTime.Now);
+        //    if (weather != null)
+        //    {
+        //        await AddAsync(weather);
+        //    }
+        //    return weather;
+        //}
     }
 }

@@ -28,7 +28,6 @@ namespace Weather
             //var weatherService = new WeatherService(jsonFilerepository, api);
             var xmlWeatherRepository = new XmlFileWeatherRepository();
             var weatherService = new WeatherService(xmlWeatherRepository, api);
-            //var weather = await GetWeather(weatherService, city, unit, appid, api);
             var weather = await weatherService.GetWeatherByCityNameAsync(city);
 
             if (weather != null)
@@ -40,33 +39,6 @@ namespace Weather
             {
                 Console.WriteLine("Problem, CityName Error");
             }
-
         }
-        
-        //static public async Task<Weather> GetWeather(WeatherService weatherService, string city,
-        //    string unit, string appid, IWeatherApi api)
-        //{
-        //    var weather = weatherService.GetWeatherByCityNameAsync(city);
-        //    if (weather != null && (DateTime.Now - weather.dateTime).Minutes < 1)
-        //    {
-        //        return weather;
-        //    }
-        //    if (weather != null)
-        //    {
-        //        await weatherService.RemoveAsync(weather);
-        //    }
-        //    var queryParams = new Dictionary<string, string>()
-        //    {
-        //        {"q", city},
-        //        {"units", unit},
-        //        {"appid", appid}
-        //    };
-        //    weather = new Weather(city, await api.GetWeatherAsync(queryParams), DateTime.Now);
-        //    if (weather != null)
-        //    {
-        //        await weatherService.AddAsync(weather);
-        //    }
-        //    return weather;
-        //}
     }
 }

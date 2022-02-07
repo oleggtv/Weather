@@ -64,5 +64,28 @@ namespace Weather
                 xml.Serialize(fs, weathers);
             }
         }
+        async Task IWeatherRepository.ReplaceWeatherAsync(Weather weather)
+        {
+            List<Weather> weathers = new List<Weather> { weather };
+            XmlSerializer xml = new XmlSerializer(typeof(List<Weather>));
+            using (FileStream fs = new FileStream(fileInfo.FullName, FileMode.Open))
+            {
+                weathers = (List<Weather>)xml.Deserialize(fs);
+            }
+            foreach (Weather w in weathers)
+            {
+                if (w.cityName.Equals(weather.cityName))
+                {
+                    weathers.Remove(w);
+                    break;
+                }
+            }
+            weathers.Add(weather);
+            using (FileStream fs = new FileStream(fileInfo.FullName, FileMode.Create))
+            {
+                xml.Serialize(fs, weathers);
+            }
+        }
+
     }
 }

@@ -47,5 +47,20 @@ namespace Weather
             }
             File.WriteAllText(fileinfo.FullName, JsonSerializer.Serialize(weathers));
         }
+        async Task IWeatherRepository.ReplaceWeatherAsync(Weather weather)
+        {
+            var weatherJson = File.ReadAllText(fileinfo.FullName);
+            var weathers = JsonSerializer.Deserialize<List<Weather>>(weatherJson);
+            foreach (Weather w in weathers)
+            {
+                if (w.cityName.Equals(weather.cityName))
+                {
+                    weathers.Remove(w);
+                    break;
+                }
+            }
+            weathers.Add(weather);
+            File.WriteAllText(fileinfo.FullName, JsonSerializer.Serialize(weathers));
+        }
     }
 }
