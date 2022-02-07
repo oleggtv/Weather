@@ -54,29 +54,5 @@ namespace Weather
         {
             _weatherRepository.ReplaceWeatherAsync(weather);
         }
-
-        //public async Task<Weather> GetWeather(Weather weather)
-        //{
-        //    if (weather != null && (DateTime.Now - weather.dateTime).Minutes < 1)
-        //    {
-        //        return weather;
-        //    }
-        //    if (weather != null)
-        //    {
-        //        await RemoveAsync(weather);
-        //    }
-        //    var queryParams = new Dictionary<string, string>()
-        //    {
-        //        {"q", weather.cityName},
-        //        {"units", "metric"},
-        //        {"appid", "de120f7ac96fa836de3f0c35eed33709"}
-        //    };
-        //    weather = new Weather(weather.cityName, await _weatherApi.GetWeatherAsync(queryParams), DateTime.Now);
-        //    if (weather != null)
-        //    {
-        //        await AddAsync(weather);
-        //    }
-        //    return weather;
-        //}
     }
 }
